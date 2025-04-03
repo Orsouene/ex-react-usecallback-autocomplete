@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
+import { debounce } from "lodash"
 import { IoIosArrowDropupCircle, IoIosArrowDropdownCircle } from "react-icons/io";
 
 function Ricerca() {
@@ -6,20 +7,29 @@ function Ricerca() {
     const [query, setQuery] = useState("")
     const [isOpen, setIsOpen] = useState(false)
     const fetchProduct = (query) => {
+        console.log("Chiamata")
         return (fetch(`https://boolean-spec-frontend.vercel.app/freetestapi/products?search=${query}`).then(res => res.json()).then(data => {
             setRicerca(data)
-            console.log(data)
+            // console.log(data)
         }
 
 
-        ).catch(err => console.log("errore nella recuperazione dei dati", err)))
+        ).catch(err => console.log("errore nella recuperazione dei dati", err))
+
+        )
+
+
     }
+
+    const debouncedFn = useCallback(debounce(fetchProduct, 800), [])
     useEffect(() => {
         if (query === "") {
             setRicerca([])
         }
-        fetchProduct(query)
+        debouncedFn(query)
     }, [query])
+
+
     // console.log(ricerca)
     const handleInput = (e) => {
         const value = e.target.value
